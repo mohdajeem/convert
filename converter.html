@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Converter</title>
+    <!-- <link rel="stylesheet" href="converter.css"> -->
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    background: url('image3.jpg');
+    background-repeat: no-repeat;
+}
+.container {
+    max-width: 500px;
+    width: 100%;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+h1, h2 {
+    text-align: center;
+}
+.conversion-type {
+    margin-bottom: 20px;
+}
+.conversion-type input[type="radio"] {
+    display: none;
+}
+.conversion-type label {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.conversion-type input[type="radio"]:checked + label {
+    background-color: #007bff;
+    color: #fff;
+}
+.conversion-units {
+    margin-bottom: 20px;
+}
+.conversion-units label {
+    /* display: block;
+    margin-bottom: 10px; */
+    display: inline-block;
+    margin-right: 10px;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.conversion-units input[type="radio"]:checked + label {
+    background-color: #007bff;
+    color: #fff;
+}
+.conversion-input input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.conversion-input input[type="number"]:disabled {
+    background-color: #f0f0f0;
+}
+#convertButton {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#convertButton:hover {
+    background-color: #0056b3;
+}
+    </style>
+</head>
+
+<body>
+    <h1>Conversion between two units</h1>
+    <div class="conversion-type">
+        <h2>Select conversion type</h2>
+        <input type="radio" id="length" name="conversionType" value="length">
+        <label for="length">Length</label>
+        <input type="radio" id="area" name="conversionType" value="area">
+        <label for="area">Area</label>
+        <input type="radio" id="weight" name="conversionType" value="weight">
+        <label for="weight">Weight</label>
+        <input type="radio" id="volume" name="conversionType" value="volume">
+        <label for="volume">Volume</label>
+        <input type="radio" id="temperature" name="conversionType" value="temperature">
+        <label for="temperature">Temperature</label>
+    </div>
+    <div class="conversion-units" id="conversionUnits">
+
+    </div>
+    <div class="conversion-input">
+        <input type="number" id="fromValue" placeholder="Enter value">
+        <label for="fromValue"></label>
+        <input type="number" id="toValue" placeholder="Converted value" disabled>
+        <label for="toValue"></label>
+    </div>
+    <button id="convertButton">Convert</button>
+    <script>
+        const conversionType = document.getElementsByName('conversionType');
+const conversionUnits = document.getElementById('conversionUnits');
+const fromValue = document.getElementById('fromValue');
+const toValue = document.getElementById('toValue');
+
+//onclick function for button
+// Select the convert button
+const convertButton = document.getElementById('convertButton');
+
+// Add event listener to the button
+convertButton.addEventListener('click', function() {
+    // Get the selected conversion type
+    const selectedType = getSelectedConversionType();
+    
+    // Get the selected conversion unit
+    const selectedUnit = getSelectedConversionUnit();
+    conversionUnits.innerHTML = ''; // Clear previous units
+    
+
+    // Perform conversion based on the selected type and unit
+    switch (selectedType) {
+        case 'length':
+            convertLength(selectedUnit);
+            break;
+        case 'area':
+            convertArea(selectedUnit);
+            break;
+        case 'weight':
+            convertWeight(selectedUnit);
+            break;
+        case 'volume':
+            convertVolume(selectedUnit);
+            break;
+        case 'temperature':
+            convertTemperature(selectedUnit);
+            break;
+        default:
+            // Handle default case if needed
+            alert("please select one..")
+            break;
+    }
+});
+
+// Function to get the selected conversion type
+function getSelectedConversionType() {
+    const conversionTypeRadio = document.querySelector('input[name="conversionType"]:checked');
+    return conversionTypeRadio ? conversionTypeRadio.value : null;
+}
+
+// Function to get the selected conversion unit
+function getSelectedConversionUnit() {
+    const conversionUnitRadio = document.querySelector('input[name="conversionUnit"]:checked');
+    return conversionUnitRadio ? conversionUnitRadio.value : null;
+}
+
+//new function 
+function clearInputValues() {
+    fromValue.value = '';
+    toValue.value = '';
+}
+
+for (let i = 0; i < conversionType.length; i++) {
+    conversionType[i].addEventListener('change', function () {
+        const selectedType = this.value;
+        conversionUnits.innerHTML = ''; // Clear previous units
+        clearInputValues();
+        if (selectedType === 'length') {
+            displayLengthUnits();
+        } else if (selectedType === 'area') {
+            displayAreaUnits();
+        } else if (selectedType === 'weight') {
+            displayWeightUnits();
+        } else if (selectedType === 'volume') {
+            displayVolumeUnits();
+        } else if (selectedType === 'temperature') {
+            displayTemperatureUnits();
+        }
+
+        conversionUnits.style.display = 'block'; // Show conversion units
+    });
+}
+function displayLengthUnits() {
+    const unitOptions = `
+        <input type="radio" id="meterToYard" name="conversionUnit" value="meterToYard">
+        <label for="meterToYard">Meter → Yard</label>
+        <input type="radio" id="yardToMeter" name="conversionUnit" value="yardToMeter">
+        <label for="yardToMeter">Yard → Meter</label>
+        <input type="radio" id="kilometerToMile" name="conversionUnit" value="kilometerToMile">
+        <label for="kilometerToMile">Kilometer → Mile</label>`;
+    conversionUnits.innerHTML = unitOptions;
+    const conversionUnitInputs = document.getElementsByName("conversionUnit");
+    for (let i = 0; i < conversionUnitInputs.length; i++) {
+        conversionUnitInputs[i].addEventListener('change', function () {
+            convertLength(this.value);
+        });
+    }
+}
+function displayAreaUnits() {
+    const unitOptions = `
+        <input type="radio" id="SquaremeterToSquareYard" name="conversionUnit" value="SquaremeterToSquareYard">
+        <label for="SquaremeterToSquareYard">Square Meter → Square Yard</label>
+        <input type="radio" id="SquareMeterToAcre" name="conversionUnit" value="SquareMeterToAcre">
+        <label for="SquareMeterToAcre">Square Meter → Acre</label>
+        <input type="radio" id="SquareYardToAcre" name="conversionUnit" value="SquareYardToAcre">
+        <label for="SquareYardToAcre">Square Yard → Acre</label>`;
+    conversionUnits.innerHTML = unitOptions;
+    const conversionUnitInputs = document.getElementsByName("conversionUnit");
+    for (let i = 0; i < conversionUnitInputs.length; i++) {
+        conversionUnitInputs[i].addEventListener('change', function () {
+            convertArea(this.value);
+        })
+    }
+}
+function displayWeightUnits() {
+    const unitOptions = `
+        <input type="radio" id="KgToPound" name="conversionUnit" value="KgToPound">
+        <label for="KgToPound">KG → Pound</label>;
+    <input type="radio" id="PoundToKG" name="conversionUnit" value="PoundToKG">
+        <label for="PoundToKG">Pound → KG</label>`;
+        conversionUnits.innerHTML = unitOptions;
+        const conversionUnitInputs = document.getElementsByName("conversionUnit");
+        for(let i = 0;i<conversionUnitInputs.length;i++){
+            conversionUnitInputs[i].addEventListener('change', function () {
+                convertWeight(this.value);
+            })
+        }
+        }
+        function displayVolumeUnits() {
+            const unitOptions = `
+        <input type="radio" id="LitreToGallon" name="conversionUnit" value="LitreToGallon">
+            <label for="LitreToGallon">Litre → Gallon</label>
+        <input type="radio" id="GallonToLitre" name="conversionUnit" value="GallonToLitre">
+            <label for="GallonToLitre">Gallon → Litre</label>`;
+            conversionUnits.innerHTML = unitOptions;
+            const conversionUnitInputs = document.getElementsByName("conversionUnit");
+            for(let i = 0;i<conversionUnitInputs.length;i++){
+                conversionUnitInputs[i].addEventListener('change', function () {
+                    convertVolume(this.value);
+                })
+            }
+        }
+            function displayTemperatureUnits() {
+            const unitOptions = `
+            <input type="radio" id="CtoF" name="conversionUnit" value="CtoF">
+                <label for="CtoF">Degree C → Degree F</label>
+            <input type="radio" id="FtoC" name="conversionUnit" value="FtoC">
+                <label for="FtoC">Degree F → Degree C</label>`;
+                conversionUnits.innerHTML = unitOptions;
+                const conversionUnitInputs = document.getElementsByName("conversionUnit");
+                for(let i = 0;i<conversionUnitInputs.length;i++){
+                    conversionUnitInputs[i].addEventListener('change', function () {
+                        convertTemperature(this.value);
+                    })
+                }
+        }
+                // const conversionUnit = document.getElementsByName("conversionUnit");
+                function convertLength(conversionType){
+            const inputValue = parseFloat(fromValue.value);
+                let convertedValue;
+
+                switch(conversionType){
+                case 'meterToYard':
+                convertedValue = inputValue * 1.09361;
+                break;
+                case 'yardToMeter':
+                convertedValue = inputValue / 1.09361;
+                break;
+                case 'kilometerToMile':
+                convertedValue = inputValue * 0.621371;
+                break;
+                default:
+                convertedValue = inputValue;
+                break;
+            }
+                toValue.value = convertedValue.toFixed(2);
+        }
+
+
+                function convertArea(conversionType){
+                    const inputValue = parseFloat(fromValue.value);
+                let convertedValue;
+
+                switch(conversionType){
+                case 'SquaremeterToSquareYard':
+                convertedValue = inputValue*1.19599;
+                break;
+                case 'SquareMeterToAcre':
+                convertedValue = inputValue / 4046.85642;
+                break;
+                case 'SquareYardToAcre':
+                convertedValue = inputValue * 4840;
+                break;
+                default:
+                convertedValue=inputValue;
+                break;
+            }
+                toValue.value = convertedValue.toFixed(2);
+        }
+
+        //weight function
+
+                function convertWeight(conversionType){
+                    const inputValue = parseFloat(fromValue.value);
+                let convertedValue;
+
+                switch(conversionType){
+                case 'KgToPound':
+                convertedValue = inputValue*2.20462;
+                break;
+                case 'PoundToKG':
+                convertedValue = inputValue/2.20462;
+                break;
+                default:
+                    convertedValue = inputValue;
+                    break;
+                    
+            }
+            toValue.value = convertedValue.toFixed(2);
+        }
+        //converted volume function
+                function convertVolume(conversionType){
+                    const inputValue = parseFloat(fromValue.value);
+                let convertedValue;
+
+                switch(conversionType){
+                case 'LitreToGallon':
+                    convertedValue = inputValue * 0.264172; // 1 liter = 0.264172 gallons
+                    break;
+
+                case 'GallonToLitre':
+                    convertedValue = inputValue / 0.264172; // 1 gallon = 3.78541 liters
+                    break;
+                default:
+                    convertedValue = inputValue;
+                    break;
+            }
+            toValue.value = convertedValue.toFixed(2);
+        }
+        //converted temprature function
+                function convertTemperature(conversionType){
+                    const inputValue = parseFloat(fromValue.value);
+                let convertedValue;
+
+                switch(conversionType){
+                case 'CtoF':
+                    convertedValue = (inputValue * 9/5) + 32; // Celsius to Fahrenheit
+                    break;
+                case 'FtoC':
+                    convertedValue = (inputValue - 32) * 5/9; // Fahrenheit to Celsius
+                    break;
+                default:
+                    convertedValue = inputValue;
+                    break;
+            }
+            toValue.value = convertedValue.toFixed(2);
+        }
+    </script>
+</body>
+
+</html>
